@@ -11,5 +11,5 @@ provider "grafana" {
    alias = "cloud"
 
    url   = "https://raghavgupta418.grafana.net/"
-   #auth  = data.aws_secretsmanager_secret_version.gc_access_token.secret_string
+   auth  = "glc_eyJvIjoiMTM4OTk4MiIsIm4iOiJncmFmYW5hLWdyYWZhbmEiLCJrIjoiVU43Szg4NktIVzUwOUQ4SElaaDlJdjhUIiwibSI6eyJyIjoicHJvZC1hcC1zb3V0aC0xIn19"
 }
