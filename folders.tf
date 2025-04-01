@@ -23,3 +23,17 @@ resource "grafana_dashboard" "elasticsearch" {
   config_json = file("${path.module}/dashboards/${each.key}")
   #folder      = "GrafanaCloud"
 }
+
+resource "grafana_data_source" "influxdb" {
+  type                = "influxdb"
+  name                = "myapp-metrics"
+  url                 = "http://influxdb.example.net:8086/"
+  basic_auth_enabled  = false
+  basic_auth_username = "username"
+  database_name       = "dbname" // Example: influxdb_database.metrics.name
+
+  json_data_encoded = jsonencode({
+    authType          = "default"
+    basicAuthPassword = "mypassword"
+  })
+}
