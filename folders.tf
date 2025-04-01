@@ -25,6 +25,7 @@ resource "grafana_folder" "AWS" {
 #}
 
 resource "grafana_data_source" "influxdb" {
+  provider = grafana.cloud
   type                = "influxdb"
   name                = "myapp-metrics"
   url                 = "http://influxdb.example.net:8086/"
