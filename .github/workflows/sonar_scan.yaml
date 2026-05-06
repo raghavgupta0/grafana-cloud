@@ -17,6 +17,9 @@ jobs:
   sonarcloud:
     name: SonarCloud Scan
     runs-on: ubuntu-latest
+    env:
+      SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY != '' && vars.SONAR_PROJECT_KEY || secrets.SONAR_PROJECT_KEY }}
+      SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION != '' && vars.SONAR_ORGANIZATION || secrets.SONAR_ORGANIZATION }}
 
     steps:
       - name: Checkout repository
@@ -24,14 +27,33 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate Sonar configuration
+        run: |
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo "Missing SONAR_TOKEN. Configure it as a repository secret."
+            exit 1
+          fi
+
+          if [ -z "$SONAR_PROJECT_KEY" ]; then
+            echo "Missing Sonar project key. Set SONAR_PROJECT_KEY as a repository variable or secret."
+            exit 1
+          fi
+
+          if [ -z "$SONAR_ORGANIZATION" ]; then
+            echo "Missing Sonar organization. Set SONAR_ORGANIZATION as a repository variable or secret."
+            exit 1
+          fi
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - name: SonarCloud scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
             -Dsonar.sources=.
             -Dsonar.terraform.file.suffixes=.tf
             -Dsonar.qualitygate.wait=true
